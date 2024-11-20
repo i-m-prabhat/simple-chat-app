@@ -4,8 +4,10 @@ module.exports = (req, res, next) =>
 {
     try
     {
-        const token = req.header('x-auth-token') || req.headers.authorization;
-        if (!token) return res.send({
+        const token = req.header('x-auth-token') || req.headers.authorization ||
+            req.query.token || req.body.token || req.params.token ||
+            req.headers['x-access-token'] || req.headers['x-signature'];
+        if (!token) return res.status(400).send({
             status: false,
             message: 'Access denied. No token provided.'
         });
@@ -14,7 +16,7 @@ module.exports = (req, res, next) =>
         next();
     } catch (error)
     {
-        return res.send({
+        return res.status(400).send({
             status: false,
             message: error.message
         })

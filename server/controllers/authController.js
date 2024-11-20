@@ -12,7 +12,7 @@ router.post('/signup', async (req, res) =>
         const isUserExist = await User.findOne({ email });
         if (isUserExist)
         {
-            return res.send({
+            return res.status(400).send({
                 status: false,
                 message: 'User Already Exist!'
             });
@@ -21,13 +21,13 @@ router.post('/signup', async (req, res) =>
         const hashedPassword = await bcrypt.hash(password, 10);
         const user = new User({ firstName, lastName, email, password: hashedPassword });
         await user.save();
-        return res.send({
+        return res.status(201).send({
             status: true,
             message: 'User Created Successfully!'
         });
     } catch (error)
     {
-        return res.send({
+        return res.status(400).send({
             status: false,
             message: error.message
         });
@@ -42,7 +42,7 @@ router.post('/login', async (req, res) =>
         const user = await User.findOne({ email });
         if (!user)
         {
-            return res.send({
+            return res.status(400).send({
                 status: false,
                 message: 'User Not Found!'
             });
@@ -50,7 +50,7 @@ router.post('/login', async (req, res) =>
         const isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch)
         {
-            return res.send({
+            return res.status(400).send({
                 status: false,
                 message: 'Invalid Password!'
             });
@@ -62,7 +62,7 @@ router.post('/login', async (req, res) =>
                 expiresIn: '1h'
             }
         );
-        return res.send({
+        return res.status(200).send({
             status: true,
             message: 'User Login Successfully!',
             token
@@ -70,7 +70,7 @@ router.post('/login', async (req, res) =>
     }
     catch (error)
     {
-        return res.send({
+        return res.status(400).send({
             status: false,
             message: error.message
         });
